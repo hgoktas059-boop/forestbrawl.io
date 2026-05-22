@@ -5101,6 +5101,18 @@ document.addEventListener('DOMContentLoaded',()=>{
   setTimeout(showPendingAchievements, 1200);
 });
 
+// Fallback: ensure Deriler and Profil panels are initialized shortly after load
+setTimeout(()=>{
+  try{
+    if(document.getElementById('tab-deri')){
+      renderSkins('karakter');
+    }
+    if(document.getElementById('tab-profil')){
+      initProfileTab();
+    }
+  }catch(e){/* harmless fallback */}
+},450);
+
 // ============================================================
 // LEADERBOARD — gerçek API
 // ============================================================
