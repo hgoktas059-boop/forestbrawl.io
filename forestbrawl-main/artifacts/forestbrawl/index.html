@@ -6250,6 +6250,17 @@ const SKINS_DATA = {
   ]
 };
 
+  if (typeof ACHIEVEMENTS === 'undefined') {
+    var ACHIEVEMENTS = [];
+  }
+  function _isAchievUnlocked(/* ach */) {
+    return false;
+  }
+  function renderAchievements() {
+    // Achievement rendering is unavailable in this build, but we still
+    // preserve the UI flow without breaking the page.
+  }
+
 let _skinsAnimId=null;
 let _skinsBigAnimId=null;
 let _previewSkinId='default';
