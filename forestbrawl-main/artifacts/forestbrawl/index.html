@@ -6273,6 +6273,9 @@ const SKINS_DATA = {
     // preserve the UI flow without breaking the page.
   }
 
+  // Safe no-op for pending achievement popups if the achievement system is missing.
+  function showPendingAchievements(){ /* no-op fallback */ }
+
 let _skinsAnimId=null;
 let _skinsBigAnimId=null;
 let _previewSkinId='default';
