@@ -4972,10 +4972,14 @@ let _authToken = localStorage.getItem('fb_auth_token') || null;
 let _authUser  = JSON.parse(localStorage.getItem('fb_auth_user') || 'null');
 
 function _authHeaders(json = false) {
-  const headers = {};
-  if (_authToken) headers.Authorization = 'Bearer ' + _authToken;
-  if (json) headers['Content-Type'] = 'application/json';
-  return headers;
+  // Return a Headers object to avoid subtle differences between environments
+  const h = new Headers();
+  if (_authToken) h.set('Authorization', 'Bearer ' + _authToken);
+  if (json) {
+    h.set('Content-Type', 'application/json');
+    h.set('Accept', 'application/json');
+  }
+  return h;
 }
 
 function setAuthUser(token, user){
@@ -4983,10 +4987,12 @@ function setAuthUser(token, user){
   localStorage.setItem('fb_auth_token', token);
   localStorage.setItem('fb_auth_user', JSON.stringify(user));
   updateAuthUI();
-  const profilePanel = document.getElementById('tab-profil');
-  if (profilePanel && profilePanel.classList.contains('active')) {
-    initProfileTab();
-  }
+  // Defer profile init slightly to avoid race with UI updates
+  setTimeout(()=>{
+    try{
+      initProfileTab();
+    }catch(e){/* ignore */}
+  },50);
 }
 function clearAuthUser(){
   _authToken=null; _authUser=null;
@@ -5043,6 +5049,8 @@ async function doLogin(){
     const d = await r.json();
     if(!r.ok){errEl.textContent=d.error||'Hata';return;}
     setAuthUser(d.token, d.user);
+    // Ensure profile is refreshed before continuing
+    try{ await initProfileTab(); }catch(e){}
     _syncShopWithServer();
     closeModal('login');
     showToast('✅ Hoş geldin, '+d.user.username+'! '+fbRankById(d.user.rankId??0).emoji);
@@ -5064,6 +5072,7 @@ async function doRegister(){
     const d = await r.json();
     if(!r.ok){errEl.textContent=d.error||'Hata';return;}
     setAuthUser(d.token, d.user);
+    try{ await initProfileTab(); }catch(e){}
     _syncShopWithServer();
     closeModal('register');
     showToast('🎉 Kayıt başarılı! Hoş geldin, '+d.user.username+'! '+fbRankById(d.user.rankId??0).emoji);
