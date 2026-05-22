@@ -5211,7 +5211,8 @@ function setNav(btn, tab){
 async function initProfileTab(){
   startProfilePreview();
   const nameVal=_authUser?_authUser.username:(document.getElementById('name-input').value.trim()||'Savaşçı');
-  document.getElementById('profile-username').textContent=nameVal;
+  const profileNameEl=document.getElementById('profile-username');
+  if(profileNameEl) profileNameEl.textContent=nameVal;
   if(!_authToken){
     _renderGuestProfile();
     renderAchievements();
@@ -5227,12 +5228,20 @@ async function initProfileTab(){
       return;
     }
     const d=await r.json();
+    if(d&&d.user){
+      _authUser=d.user;
+      localStorage.setItem('fb_auth_user',JSON.stringify(d.user));
+    }
     _renderRealProfile(d);
-  }catch{_renderGuestProfile();}
+  }catch{
+    _renderGuestProfile();
+  }
   renderAchievements();
 }
 
 function _renderGuestProfile(){
+  const profileNameEl=document.getElementById('profile-username');
+  if(profileNameEl) profileNameEl.textContent='Misafir';
   const levelEl=document.getElementById('profile-level');
   if(levelEl) levelEl.textContent='Misafir — Giriş yap, ilerlemeni kaydet!';
   const badgeEl=document.getElementById('profile-rank-badge');
