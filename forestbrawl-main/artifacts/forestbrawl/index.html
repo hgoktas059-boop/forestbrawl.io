@@ -5075,6 +5075,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   updateAuthUI();
   document.getElementById('login-password')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
   document.getElementById('reg-password')?.addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
+  // If the Deriler tab is already active on load, render its skins immediately.
+  const deriPanel=document.getElementById('tab-deri');
+  if(deriPanel && deriPanel.classList.contains('active')){
+    renderSkins('karakter');
+  }
   // Validate stored token and refresh user on page load
   if(_authToken){
     fetch('/api/auth/me',{headers:_authHeaders()}).then(r=>{
