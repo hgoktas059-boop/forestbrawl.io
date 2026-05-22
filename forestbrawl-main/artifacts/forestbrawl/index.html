@@ -4049,7 +4049,7 @@ async function _syncShopWithServer(){
   if(!_authToken) return;
   try{
     const owned=shopGetOwned(); const equipped=shopGetEquipped(); const coins=shopGetGold();
-    const r=await fetch('/api/shop/sync',{method:'POST',headers:_authHeaders(),body:JSON.stringify({ownedItems:owned,equippedItems:equipped,coins})});
+    const r=await fetch('/api/shop/sync',{method:'POST',headers:_authHeaders(true),body:JSON.stringify({ownedItems:owned,equippedItems:equipped,coins})});
     if(r.ok){
       const d=await r.json();
       if(d.ownedItems){ shopSetOwned(d.ownedItems); }
@@ -4093,7 +4093,7 @@ function shopEquipItem(id){
   updateShopSlots();
   showToast('✅ '+(shopFindItem(id)?.name||id)+' donatıldı!');
   if(_authToken){
-    fetch('/api/shop/equip',{method:'PUT',headers:_authHeaders(),body:JSON.stringify({category:cat,itemId:eq[cat]})}).catch(()=>{});
+    fetch('/api/shop/equip',{method:'PUT',headers:_authHeaders(true),body:JSON.stringify({category:cat,itemId:eq[cat]})}).catch(()=>{});
   }
 }
 async function shopBuyItem(id){
@@ -4103,7 +4103,7 @@ async function shopBuyItem(id){
   if(gold<item.cost){showToast('💰 Yeterli altın yok! ('+item.cost.toLocaleString('tr-TR')+' gerekli)');return;}
   if(_authToken){
     try{
-      const r=await fetch('/api/shop/buy',{method:'POST',headers:_authHeaders(),body:JSON.stringify({itemId:id,cost:item.cost})});
+      const r=await fetch('/api/shop/buy',{method:'POST',headers:_authHeaders(true),body:JSON.stringify({itemId:id,cost:item.cost})});
       const d=await r.json();
       if(!r.ok){showToast('❌ '+(d.error||'Satın alım başarısız'));return;}
       if(typeof d.newCoins==='number') shopSetGold(d.newCoins);
@@ -4971,7 +4971,12 @@ function fbRankImg(rankId,px,style){
 let _authToken = localStorage.getItem('fb_auth_token') || null;
 let _authUser  = JSON.parse(localStorage.getItem('fb_auth_user') || 'null');
 
-function _authHeaders(){ return _authToken ? {'Authorization':'Bearer '+_authToken,'Content-Type':'application/json'} : {'Content-Type':'application/json'}; }
+function _authHeaders(json = false) {
+  const headers = {};
+  if (_authToken) headers.Authorization = 'Bearer ' + _authToken;
+  if (json) headers['Content-Type'] = 'application/json';
+  return headers;
+}
 
 function setAuthUser(token, user){
   _authToken = token; _authUser = user;
@@ -5020,7 +5025,7 @@ function updateAuthUI(){
 }
 
 async function doLogout(){
-  try{ await fetch('/api/auth/logout',{method:'POST',headers:_authHeaders()}); }catch{}
+  try{ await fetch('/api/auth/logout',{method:'POST',headers:_authHeaders(true)}); }catch{}
   clearAuthUser();
   showToast('👋 Çıkış yapıldı');
 }
@@ -5080,6 +5085,10 @@ document.addEventListener('DOMContentLoaded',()=>{
         _authUser=d.user;
         localStorage.setItem('fb_auth_user',JSON.stringify(d.user));
         updateAuthUI();
+        const profilePanel = document.getElementById('tab-profil');
+        if (profilePanel && profilePanel.classList.contains('active')) {
+          initProfileTab();
+        }
       }
     }).catch(()=>{});
   }
