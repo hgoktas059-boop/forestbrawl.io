@@ -1,0 +1,26 @@
+{
+  "users": [
+    {
+      "id": "7f87d974-0c47-4b57-9cb1-130d744fadbe",
+      "username": "esad",
+      "email": "eefe@gmail.com",
+      "passwordHash": "efc82571544362a9f1a70eb92ef53895417a335aedc1431a62afb64b1f5cf570",
+      "salt": "965782e688f8fa34f49fdb63a0498d3c",
+      "createdAt": "2026-05-22T01:37:37.796Z",
+      "xp": 300,
+      "rankId": 0,
+      "coins": 290,
+      "gamesPlayed": 2,
+      "kills": 0,
+      "deaths": 2,
+      "bestScore": 1290,
+      "timePlayed": 55,
+      "ownedItems": [],
+      "equippedItems": {
+        "kanatlar": "w_devil",
+        "izler": "iz_altin"
+      },
+      "lastXpUpdate": 1779415351463
+    }
+  ]
+}

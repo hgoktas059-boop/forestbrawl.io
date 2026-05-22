@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: forestbrawl-api
+    runtime: node
+    region: frankfurt
+    buildCommand: "cd artifacts/api-server && npm install --legacy-peer-deps && npm run build"
+    startCommand: "cd artifacts/api-server && npm run start"
+    plan: standard
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8080
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: FB_DATA_DIR
+        value: /var/data
+    healthCheckPath: /api/healthz
+    healthCheckInterval: 30
+    healthCheckTimeout: 10
